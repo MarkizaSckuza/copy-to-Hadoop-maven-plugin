@@ -1,7 +1,5 @@
 package org.margo.plugins.mojo;
 
-import com.jcraft.jsch.JSchException;
-import com.jcraft.jsch.SftpException;
 import com.jcraft.jsch.SftpProgressMonitor;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -11,10 +9,9 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
-import org.margo.plugins.JarCopier;
+import org.margo.plugins.copier.impl.SFTPFileCopier;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.Arrays;
 
 @Mojo(name = "copyJar")
@@ -48,10 +45,10 @@ public class CopyJarMojo extends AbstractMojo {
     @Parameter(defaultValue = "${project}", readonly = true)
     private MavenProject project;
 
-    private final JarCopier jarCopier;
+    private final SFTPFileCopier SFTPFileCopier;
 
     public CopyJarMojo() {
-        jarCopier = new JarCopier();
+        SFTPFileCopier = new SFTPFileCopier();
     }
 
     @Override
@@ -66,11 +63,11 @@ public class CopyJarMojo extends AbstractMojo {
             throw new MojoFailureException("There's no jar file in project.");
         }
 
-        try {
-            jarCopier.copy(host, userName, password, file, jarFileDestination, monitor);
-        } catch (JSchException | SftpException | FileNotFoundException e) {
-            throw new MojoFailureException(e.getMessage());
-        }
+//        try {
+//            SFTPFileCopier.copy(host, userName, password, file, jarFileDestination, monitor);
+//        } catch (JSchException | SftpException | FileNotFoundException e) {
+//            throw new MojoFailureException(e.getMessage());
+//        }
     }
 
     private SftpProgressMonitor monitor = new SftpProgressMonitor() {
