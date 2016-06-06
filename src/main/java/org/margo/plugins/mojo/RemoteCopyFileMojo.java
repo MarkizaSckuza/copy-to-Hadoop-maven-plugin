@@ -1,6 +1,5 @@
 package org.margo.plugins.mojo;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -8,59 +7,36 @@ import org.apache.maven.plugins.annotations.Execute;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
+import org.margo.plugins.copier.RemoteFileCopier;
 import org.margo.plugins.copier.RemoteFileCopierProcessor;
+import org.margo.plugins.copier.downloader.DownloaderFactory;
 import org.margo.plugins.copier.exception.CopierException;
-import org.margo.plugins.copier.impl.HDFSFileCopier;
+import org.margo.plugins.copier.uploader.UploaderFactory;
 
-import java.io.File;
 import java.net.URI;
 
 /**
- * Goal which copies input file to the specified Hadoop path
+ * Goal which copies file from specified uri to specified uri
  */
-@Mojo(name = "copyFile")
-@Execute(goal = "copyFile", phase = LifecyclePhase.DEPLOY)
+@Mojo(name = "copy")
+@Execute(goal = "copy", phase = LifecyclePhase.DEPLOY)
 public class RemoteCopyFileMojo extends AbstractMojo {
 
-    public static final String DEFAULT_PORT = "8020";
+    @Parameter(property = "fromUri", required = true)
+    private URI fromUri;
 
-    /**
-     * Host
-     */
-    @Parameter(property = "host", required = true)
-    private String host;
+    @Parameter(property = "toUri", required = true)
+    private URI toUri;
 
-    /**
-     * Port
-     */
-    @Parameter(property = "port")
-    private String port;
-
-    /**
-     * Path from which copy the input file.
-     */
-    @Parameter(property = "input.file", required = true)
-    private File inputFile;
-
-    @Parameter(property = "uri", required = true)
-    private URI uri;
-
-    /**
-     * Path to which copy the input file.
-     */
-    @Parameter(property = "input.dest.path", required = true)
-    private String inputFileDestination;
-
-    private HDFSFileCopier hdfsFileCopier;
+    private RemoteFileCopier remoteFileCopier;
 
     public RemoteCopyFileMojo() {
-        hdfsFileCopier = new HDFSFileCopier();
+        remoteFileCopier = new RemoteFileCopierProcessor(new DownloaderFactory(), new UploaderFactory());
     }
 
     public void execute() throws MojoExecutionException, MojoFailureException {
-        port = StringUtils.isEmpty(port) ? DEFAULT_PORT : port;
         try {
-            RemoteFileCopierProcessor.getInstance().copy(inputFile, uri);
+            remoteFileCopier.copy(fromUri, toUri);
         } catch (CopierException e) {
             throw new MojoFailureException(e.getMessage());
         }

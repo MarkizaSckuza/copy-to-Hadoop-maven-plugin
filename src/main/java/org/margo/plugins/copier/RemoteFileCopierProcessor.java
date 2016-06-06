@@ -1,56 +1,51 @@
 package org.margo.plugins.copier;
 
-import org.margo.plugins.copier.api.RemoteFileCopier;
+import org.margo.plugins.copier.downloader.Downloader;
+import org.margo.plugins.copier.downloader.DownloaderFactory;
 import org.margo.plugins.copier.exception.CopierException;
-import org.margo.plugins.copier.impl.*;
+import org.margo.plugins.copier.exception.DownloaderException;
+import org.margo.plugins.copier.exception.UploaderException;
+import org.margo.plugins.copier.uploader.Uploader;
+import org.margo.plugins.copier.uploader.UploaderFactory;
 
-import java.io.File;
 import java.net.URI;
 
 public class RemoteFileCopierProcessor implements RemoteFileCopier {
 
-    private RemoteFileCopierProcessor() {
-    }
+    private DownloaderFactory downloaderFactory;
 
-    public static RemoteFileCopierProcessor getInstance() {
-        return CopierProcessorInstanceHolder.INSTANCE;
+    private UploaderFactory uploaderFactory;
+
+    public RemoteFileCopierProcessor(DownloaderFactory downloaderFactory, UploaderFactory uploaderFactory) {
+        this.downloaderFactory = downloaderFactory;
+        this.uploaderFactory = uploaderFactory;
     }
 
     @Override
-    public void copy(File source, URI targetPath) throws CopierException {
-        RemoteFileCopier remoteFileCopier;
-        String scheme = targetPath.getScheme();
-        switch (scheme) {
-            case "hdfs":
-                remoteFileCopier = new HDFSFileCopier();
-                break;
-            case "http":
-            case "https":
-                remoteFileCopier = new HTTPFileCopier();
-                break;
-            case "ssh":
-                remoteFileCopier = new SSHFileCopier();
-                break;
-            case "sftp":
-                remoteFileCopier = new SFTPFileCopier();
-                break;
-            case "scp":
-                remoteFileCopier = new SCPFileCopier();
-                break;
-            case "telnet":
-                remoteFileCopier = new TelnetFileCopier();
-                break;
-            case "ftp":
-                remoteFileCopier = new FTPFileCopier();
-                break;
-            default:
-                throw new IllegalArgumentException(scheme + "is unknown scheme");
+    public void copy(URI source, URI target) throws CopierException {
+        try {
+            Downloader downloader = downloaderFactory.createDownloader(source.getScheme());
+            byte[] data = downloader.download(source);
+            Uploader uploader = uploaderFactory.createUploader(target.getScheme());
+            uploader.upload(target, data);
+        } catch (UploaderException | DownloaderException e) {
+            throw new CopierException(e);
         }
-
-        remoteFileCopier.copy(source, targetPath);
     }
 
-    private static class CopierProcessorInstanceHolder {
-        private static final RemoteFileCopierProcessor INSTANCE = new RemoteFileCopierProcessor();
+    public DownloaderFactory getDownloaderFactory() {
+        return downloaderFactory;
+    }
+
+    public void setDownloaderFactory(DownloaderFactory downloaderFactory) {
+        this.downloaderFactory = downloaderFactory;
+    }
+
+    public UploaderFactory getUploaderFactory() {
+        return uploaderFactory;
+    }
+
+    public void setUploaderFactory(UploaderFactory uploaderFactory) {
+        this.uploaderFactory = uploaderFactory;
     }
 }

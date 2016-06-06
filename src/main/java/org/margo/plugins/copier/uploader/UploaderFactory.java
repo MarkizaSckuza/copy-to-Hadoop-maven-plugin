@@ -3,20 +3,23 @@ package org.margo.plugins.copier.uploader;
 public class UploaderFactory {
 
     public Uploader createUploader(String scheme) {
-        //        switch (scheme) {
-//            case "hdfs":
-//                remoteFileCopier = new HDFSFileCopier();
-//                break;
-//            case "http":
-//            case "https":
-//                remoteFileCopier = new HTTPFileCopier();
-//                break;
-//            case "ftp":
-//                remoteFileCopier = new FTPFileCopier();
-//                break;
-//            default:
-//                throw new IllegalArgumentException(scheme + "is unknown scheme");
-//        }
-        return null;
+        Uploader uploader;
+        switch (scheme) {
+            case "hdfs":
+                uploader =  new HDFSUploader();
+                break;
+            case "sftp":
+                uploader =  new SFTPUploader();
+                break;
+            case "http":
+                uploader = new HTTPUploader();
+                break;
+            case "file":
+                uploader = new LocalFileUploader();
+                break;
+            default:
+                throw new IllegalArgumentException(scheme + "is unknown scheme");
+        }
+        return uploader;
     }
 }
