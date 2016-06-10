@@ -15,6 +15,10 @@ public class HDFSDownloader implements Downloader {
         try {
             Path path = new Path(uri);
             FileSystem hdfs = FileSystem.get(uri, new Configuration());
+
+            if (!hdfs.exists(path))
+                throw new IOException("There is no specified path " + path);
+
             return IOUtils.toByteArray(hdfs.open(path));
         } catch (IOException e) {
             throw new DownloaderException(e);

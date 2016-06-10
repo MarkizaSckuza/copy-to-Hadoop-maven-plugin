@@ -28,8 +28,20 @@ public class SFTPUploader implements Uploader {
         try {
             session = jsch.getSession(URICommons.getUsername(uri), uri.getHost(), uri.getPort());
             session.setPassword(URICommons.getPassword(uri));
+            session.setConfig("StrictHostKeyChecking", "no");
+            session.connect();
             sftp = ((ChannelSftp) session.openChannel("sftp"));
-            sftp.cd(URICommons.getPath(uri));
+            sftp.connect();
+
+            String path = URICommons.getPath(uri);
+
+            try {
+                sftp.stat(path);
+            } catch (SftpException e) {
+                sftp.mkdir(path);
+            }
+
+            sftp.cd(path);
             sftp.put(new ByteInputStream(data, data.length), uri.getPath(), monitor);
         } catch (JSchException | SftpException e) {
             e.printStackTrace();

@@ -21,7 +21,16 @@ public class SFTPDownloader implements Downloader {
         try {
             session = jsch.getSession(URICommons.getUsername(uri), uri.getHost(), uri.getPort());
             session.setPassword(URICommons.getPassword(uri));
+            session.setConfig("StrictHostKeyChecking", "no");
+            session.connect();
             sftp = ((ChannelSftp) session.openChannel("sftp"));
+            sftp.connect();
+
+            try {
+                sftp.stat(uri.getPath());
+            } catch (SftpException e) {
+                throw new IOException("There is no specified path " + uri.getPath());
+            }
 
             InputStream in = sftp.get(uri.getPath());
             ByteArrayOutputStream  out = new ByteArrayOutputStream();
