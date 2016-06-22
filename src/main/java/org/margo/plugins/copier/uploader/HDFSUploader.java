@@ -5,6 +5,7 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IOUtils;
+import org.margo.plugins.copier.annotations.Writer;
 import org.margo.plugins.copier.exception.UploaderException;
 
 import java.io.BufferedInputStream;
@@ -13,9 +14,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 
+@Writer(value = "hdfs")
 public class HDFSUploader implements Uploader {
     @Override
-    public byte[] upload(URI uri, byte[] data) throws UploaderException {
+    public boolean upload(URI uri, byte[] data) throws UploaderException {
         try {
             FileSystem hdfs = FileSystem.get(uri, new Configuration());
             InputStream in = new BufferedInputStream(new ByteInputStream(data, data.length));
@@ -25,6 +27,6 @@ public class HDFSUploader implements Uploader {
             throw new UploaderException(e);
         }
 
-        return new byte[] {};
+        return true;
     }
 }

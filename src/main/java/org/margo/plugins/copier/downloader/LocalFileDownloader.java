@@ -2,6 +2,7 @@ package org.margo.plugins.copier.downloader;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
+import org.margo.plugins.copier.annotations.Reader;
 import org.margo.plugins.copier.exception.DownloaderException;
 
 import java.io.FileInputStream;
@@ -12,6 +13,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+@Reader("file")
 public class LocalFileDownloader implements Downloader {
     @Override
     public byte[] download(URI uri) throws DownloaderException {

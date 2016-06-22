@@ -2,12 +2,12 @@ package org.margo.plugins.copier.uploader;
 
 import com.jcraft.jsch.*;
 import com.sun.xml.internal.messaging.saaj.util.ByteInputStream;
-import org.apache.commons.httpclient.util.URIUtil;
-import org.apache.commons.io.FilenameUtils;
 import org.margo.plugins.copier.URICommons;
+import org.margo.plugins.copier.annotations.Writer;
 
 import java.net.URI;
 
+@Writer("sftp")
 public class SFTPUploader implements Uploader {
 
     private JSch jsch = new JSch();
@@ -22,7 +22,7 @@ public class SFTPUploader implements Uploader {
     }
 
     @Override
-    public byte[] upload(URI uri, byte[] data) {
+    public boolean upload(URI uri, byte[] data) {
         Session session = null;
         ChannelSftp sftp = null;
         try {
@@ -54,6 +54,6 @@ public class SFTPUploader implements Uploader {
             }
         }
 
-        return new byte[0];
+        return true;
     }
 }

@@ -1,24 +1,28 @@
 package org.margo.plugins.copier.downloader;
 
+import org.margo.plugins.copier.Parser;
+import org.margo.plugins.copier.annotations.Reader;
+import org.margo.plugins.copier.exception.CopierException;
+
 public class DownloaderFactory {
 
-    public Downloader createDownloader(String scheme) {
+    public Downloader createDownloader(String scheme) throws CopierException {
+        Class c = Parser
+                .getDownloaders()
+                .stream()
+                .filter(x -> x.getAnnotation(Reader.class).value().equals(scheme))
+                .findFirst()
+                .orElse(null);
+
         Downloader downloader;
-        switch (scheme) {
-            case "hdfs":
-                downloader = new HDFSDownloader();
-                break;
-            case "sftp":
-                downloader = new SFTPDownloader();
-                break;
-            case "file":
-                downloader = new LocalFileDownloader();
-                break;
-            case "http":
-                downloader = new HTTPDownloader();
-                break;
-            default:
-                throw new IllegalArgumentException(scheme + "is unknown scheme");
+        if (c == null) {
+            throw new IllegalArgumentException(scheme + " is unknown scheme");
+        } else {
+            try {
+                downloader = (Downloader) c.newInstance();
+            } catch (InstantiationException | IllegalAccessException e) {
+                throw  new CopierException(e);
+            }
         }
 
         return downloader;

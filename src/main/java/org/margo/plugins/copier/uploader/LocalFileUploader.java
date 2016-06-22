@@ -2,6 +2,7 @@ package org.margo.plugins.copier.uploader;
 
 import org.apache.commons.io.IOUtils;
 import org.margo.plugins.copier.URICommons;
+import org.margo.plugins.copier.annotations.Writer;
 import org.margo.plugins.copier.exception.UploaderException;
 
 import java.io.FileOutputStream;
@@ -12,9 +13,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+@Writer(value = "file")
 public class LocalFileUploader implements Uploader {
     @Override
-    public byte[] upload(URI uri, byte[] data) throws UploaderException {
+    public boolean upload(URI uri, byte[] data) throws UploaderException {
         try {
             Path path = Paths.get(URICommons.getPath(uri));
 
@@ -28,6 +30,6 @@ public class LocalFileUploader implements Uploader {
             throw new UploaderException(e);
         }
 
-        return new byte[]{};
+        return true;
     }
 }

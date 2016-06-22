@@ -8,6 +8,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicHeader;
+import org.margo.plugins.copier.annotations.Reader;
 import org.margo.plugins.copier.exception.DownloaderException;
 
 import java.io.IOException;
@@ -15,6 +16,7 @@ import java.net.URI;
 import java.util.HashSet;
 import java.util.Set;
 
+@Reader("http")
 public class HTTPDownloader implements Downloader {
 
     private static final String USER_AGENT = "Mozilla/5.0";
