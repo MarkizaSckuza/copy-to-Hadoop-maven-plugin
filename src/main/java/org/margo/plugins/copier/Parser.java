@@ -1,7 +1,7 @@
 package org.margo.plugins.copier;
 
-import org.margo.plugins.copier.annotations.Reader;
-import org.margo.plugins.copier.annotations.Writer;
+import org.margo.plugins.copier.annotation.Reader;
+import org.margo.plugins.copier.annotation.Writer;
 import org.reflections.Reflections;
 
 import java.io.FileInputStream;
@@ -29,7 +29,7 @@ public class Parser {
     public static Set<Class<?>> getDownloaders(){
         String[] downloaders = properties.getProperty("downloaders").split(",");
         Set<Class<?>> classes = new HashSet<>();
-        Arrays.asList(downloaders).forEach(x -> classes.addAll(new Reflections(x).getTypesAnnotatedWith(Reader.class)));
+        Arrays.stream(downloaders).forEach(x -> classes.addAll(new Reflections(x).getTypesAnnotatedWith(Reader.class)));
 
         return classes;
     }
@@ -37,7 +37,7 @@ public class Parser {
     public static Set<Class<?>> getUploaders() {
         String[] uploaders = properties.getProperty("uploaders").split(",");
         Set<Class<?>> classes = new HashSet<>();
-        Arrays.asList(uploaders).forEach(x -> classes.addAll(new Reflections(x).getTypesAnnotatedWith(Writer.class)));
+        Arrays.stream(uploaders).forEach(x -> classes.addAll(new Reflections(x).getTypesAnnotatedWith(Writer.class)));
 
         return classes;
     }

@@ -2,7 +2,7 @@ package org.margo.plugins.copier.uploader;
 
 import org.apache.commons.io.IOUtils;
 import org.margo.plugins.copier.URICommons;
-import org.margo.plugins.copier.annotations.Writer;
+import org.margo.plugins.copier.annotation.Writer;
 import org.margo.plugins.copier.exception.UploaderException;
 
 import java.io.FileOutputStream;

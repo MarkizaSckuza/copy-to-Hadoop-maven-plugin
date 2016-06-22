@@ -3,7 +3,7 @@ package org.margo.plugins.copier.downloader;
 import com.jcraft.jsch.*;
 import org.apache.hadoop.io.IOUtils;
 import org.margo.plugins.copier.URICommons;
-import org.margo.plugins.copier.annotations.Reader;
+import org.margo.plugins.copier.annotation.Reader;
 import org.margo.plugins.copier.exception.DownloaderException;
 
 import java.io.ByteArrayOutputStream;

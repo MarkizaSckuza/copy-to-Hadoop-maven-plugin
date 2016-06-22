@@ -7,7 +7,7 @@ import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicHeader;
-import org.margo.plugins.copier.annotations.Writer;
+import org.margo.plugins.copier.annotation.Writer;
 import org.margo.plugins.copier.exception.UploaderException;
 
 import java.io.IOException;

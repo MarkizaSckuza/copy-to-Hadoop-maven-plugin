@@ -33,7 +33,6 @@ hs_err_pid*
 
 ## Directory-based project format:
 .idea/
-src/main/tests
 # if you remove the above rule, at least ignore the following:
 
 # User-specific stuff:
@@ -74,3 +73,4 @@ atlassian-ide-plugin.xml
 com_crashlytics_export_strings.xml
 crashlytics.properties
 crashlytics-build.properties
+/src/main/test/

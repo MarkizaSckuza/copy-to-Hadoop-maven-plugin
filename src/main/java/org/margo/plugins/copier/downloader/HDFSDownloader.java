@@ -4,7 +4,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
-import org.margo.plugins.copier.annotations.Reader;
+import org.margo.plugins.copier.annotation.Reader;
 import org.margo.plugins.copier.exception.DownloaderException;
 
 import java.io.IOException;

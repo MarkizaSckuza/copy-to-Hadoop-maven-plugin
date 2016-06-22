@@ -8,7 +8,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicHeader;
-import org.margo.plugins.copier.annotations.Reader;
+import org.margo.plugins.copier.annotation.Reader;
 import org.margo.plugins.copier.exception.DownloaderException;
 
 import java.io.IOException;
