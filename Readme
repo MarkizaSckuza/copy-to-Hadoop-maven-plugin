@@ -1,12 +1,15 @@
-Copy to hadoop maven plugin Version 1.0 5/31/2016
+Copy to hadoop maven plugin Version 2.0 6/22/2016
 
 GENERAL USAGE NOTES
 --------------------
 
 * Generally this plugin is developed for easier deploying and copying files to Hadoop system.
 * Also it may be used to:
-    * transfer files to Hadoop system
-    * transfer files to Linux system
+    * transfer files from/to Hadoop system
+    * transfer files from/to Linux system
+    * transfer files from/to local system
+    * transfer files from/to http server, etc
+
 * For example, you have written the MapReduce program and you want to push your input file[s] to
   remote Hadoop and your jar file to local system (Linux), then you can use the copy-to-hadoop-maven-
   plugin in one of ways described below.
@@ -19,7 +22,7 @@ Installing plugin
     <plugin>
         <groupId>org.margo.plugins</groupId>
         <artifactId>copy-to-hadoop-maven-plugin</artifactId>
-        <version>1.0</version>
+        <version>2.0</version>
     </plugin>
 
 -----------------------------------------------------------------------------------------------------
@@ -33,32 +36,18 @@ Usage example
         <execution>
             <id>copy-files</id>
             <goals>
-                <goal>copyFile</goal>
-                <goal>copyJar</goal>
+                <goal>copy</goal>
             </goals>
             <configuration>
-                <host>192.168.0.103</host>
-                <port>9000<port>
-                <inputFileDestination>/your/destination/path/test.txt</inputFileDestination>
-                <inputFileSource>\your\file\path\test.txt</inputFileSource>
-                <jarFileDestination>/your/destination/path/for/jar/</jarFileDestination>
-                <userName>user_name</userName>
-                <password>pass_for_user_name</password>
+                <fromUri>file://D:/source/path/test.txt</fromUri>
+                <toUri>hdfs://host:port/destination/path/test.txt</toUri>
             </configuration>
         </execution>
      </executions>
 
 where:
-    host - host of the remote system
-    port - [OPTIONAL] port of Hadoop NameNode. By default plugin uses the 8020 port.
-    inputFileDestination - the destination path on Hadoop system
-    inputFileSource - the source path to file on your Windows which should be copied to Hadoop system
-    jarFileDestination - the destination path on Linux system
-    userName - the user name for the Linux system
-    password - password for the Linux system
-
-    NOTE: the path to jar file is determined during plugin execution, it looks to the build path of
-        your project.
+    fromUri - your source path
+    toUri - your destination path
 
 ** Turn off the default binding to deploy phase of the specified deploy plugin (for ex.
         maven-deploy-plugin) to enable deploying your files by copy-to-hadoop-maven-plugin executing
@@ -81,23 +70,8 @@ where:
                 ...
             </execution>
 
-* To use plugin from console write the similar commands:
+* To use plugin from console write the similar command:
 
-    mvn copy:copyFile -Dhost="192.168.0.103" -Dinput.src.path="\your\file\path\test.txt"
-        -Dinput.dest.path="/your/destination/path/test.txt"
+    mvn copy:copy -DfromUri="file://D:/source/path/test.txt" -DtoUri="sftp://username:passwd@host:port/destination/path/test.txt"
 
-    to copy file to Hadoop system, where:
-        -Dhost - host of the remote system
-        -Dport - [OPTIONAL] port of Hadoop NameNode. By default plugin uses the 8020 port.
-        -Dinput.src.path - the source path to file on your Windows which should be copied to Hadoop system
-        -Dinput.dest.path - the destination path on Hadoop system. Note: you should point at the end the name of file
-            you want to send.
-
-    mvn copy:copyJar -Dhost="192.168.0.103" -Duser="user_name" -Dpass="pass_for_user_name"
-        -Djar.path="/your/destination/path/for/jar/"
-
-    to copy jar file to Linux system, where:
-        -Dhost - host of the remote system
-        -Duser - the user name for the Linux system
-        -Dpass - password for the Linux system
-        -Djar.path - the destination path on Linux system
+    this command will copy file test.txt from local system to remote system by sftp protocol.
