@@ -1,32 +1,47 @@
 package org.margo.plugins.copier.downloader;
 
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.FileUtils;
 import org.margo.plugins.copier.annotation.Reader;
+import org.margo.plugins.copier.exception.CopierException;
 import org.margo.plugins.copier.exception.DownloaderException;
 
-import java.io.FileInputStream;
+import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URI;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 @Reader("file")
 public class LocalFileDownloader implements Downloader {
     @Override
-    public byte[] download(URI uri) throws DownloaderException {
+    public void download(URI uri, DownloaderHandler downloaderHandler) throws DownloaderException {
         try {
-            Path path = Paths.get(FilenameUtils.getPath(uri.getPath()));
+            File file = new File(uri);
 
-            if (!Files.exists(path))
-                throw new IOException("There is no specified path " + path);
+            if (!file.exists())
+                throw new IOException("There is no such file/directory on the specified path " + file.getPath()
+                        + ". Please, make sure that you have specified the correct path to the file(s) you want to be copied.");
 
-            InputStream input = new FileInputStream(uri.getPath());
-            return IOUtils.toByteArray(input);
-        } catch (IOException e) {
+            if (file.isDirectory()) {
+                downloadDirectory(file, downloaderHandler);
+            } else {
+                downloadFile(file, downloaderHandler);
+            }
+        } catch (IOException | CopierException e) {
             throw new DownloaderException(e);
         }
+    }
+
+    protected void downloadDirectory(File file, DownloaderHandler downloaderHandler) throws IOException, CopierException {
+        File[] files = file.listFiles();
+        for (File currFile : files) {
+            if (currFile.isDirectory()) {
+                downloadDirectory(currFile, downloaderHandler);
+            } else {
+                downloadFile(currFile, downloaderHandler);
+            }
+        }
+    }
+
+    protected void downloadFile(File file, DownloaderHandler downloaderHandler) throws IOException, CopierException {
+        downloaderHandler.handle(FileUtils.readFileToByteArray(file), file.toURI());
     }
 }

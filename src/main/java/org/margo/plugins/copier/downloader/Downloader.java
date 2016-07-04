@@ -5,5 +5,5 @@ import org.margo.plugins.copier.exception.DownloaderException;
 import java.net.URI;
 
 public interface Downloader {
-    byte[] download(URI uri) throws DownloaderException;
+    void download(URI uri, DownloaderHandler downloaderHandler) throws DownloaderException;
 }

@@ -9,6 +9,7 @@ import org.margo.plugins.copier.uploader.Uploader;
 import org.margo.plugins.copier.uploader.UploaderFactory;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 
 public class RemoteFileCopierProcessor implements RemoteFileCopier {
 
@@ -24,13 +25,23 @@ public class RemoteFileCopierProcessor implements RemoteFileCopier {
     @Override
     public void copy(URI source, URI target) throws CopierException {
         try {
-            Downloader downloader = downloaderFactory.createDownloader(source.getScheme());
-            byte[] data = downloader.download(source);
-            Uploader uploader = uploaderFactory.createUploader(target.getScheme());
-            uploader.upload(target, data);
-        } catch (UploaderException | DownloaderException e) {
+            final URI normalizedSource = normalizeURI(source);
+            final URI normalizedTarget = normalizeURI(target);
+            Downloader downloader = downloaderFactory.createDownloader(normalizedSource.getScheme());
+            Uploader uploader = uploaderFactory.createUploader(normalizedTarget.getScheme());
+            downloader.download(normalizedSource, (data, dataURI) -> {
+                String targetPathFragment = dataURI.toString().substring(normalizedSource.toString().length());
+                URI newTarget = URI.create(normalizedTarget.toString() + targetPathFragment);
+                uploader.upload(newTarget, data);
+            });
+        } catch (UploaderException | DownloaderException | URISyntaxException e) {
             throw new CopierException(e);
         }
+    }
+
+    protected URI normalizeURI(URI uri) throws URISyntaxException {
+        String uriStr = uri.normalize().toString();
+        return uriStr.endsWith("/") ? new URI(uriStr.substring(0, uriStr.length() - 1)) : new URI(uriStr);
     }
 
     public DownloaderFactory getDownloaderFactory() {

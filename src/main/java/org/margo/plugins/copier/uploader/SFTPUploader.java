@@ -1,10 +1,10 @@
 package org.margo.plugins.copier.uploader;
 
 import com.jcraft.jsch.*;
-import com.sun.xml.internal.messaging.saaj.util.ByteInputStream;
 import org.margo.plugins.copier.URICommons;
 import org.margo.plugins.copier.annotation.Writer;
 
+import java.io.ByteArrayInputStream;
 import java.net.URI;
 
 @Writer("sftp")
@@ -42,7 +42,7 @@ public class SFTPUploader implements Uploader {
             }
 
             sftp.cd(path);
-            sftp.put(new ByteInputStream(data, data.length), uri.getPath(), monitor);
+            sftp.put(new ByteArrayInputStream(data), uri.getPath(), monitor);
         } catch (JSchException | SftpException e) {
             e.printStackTrace();
         } finally {

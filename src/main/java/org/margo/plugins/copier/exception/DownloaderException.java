@@ -1,6 +1,6 @@
 package org.margo.plugins.copier.exception;
 
-public class DownloaderException extends Exception {
+public class DownloaderException extends CopierException {
     public DownloaderException() {
     }
 

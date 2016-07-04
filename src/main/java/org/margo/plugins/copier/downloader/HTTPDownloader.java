@@ -9,6 +9,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicHeader;
 import org.margo.plugins.copier.annotation.Reader;
+import org.margo.plugins.copier.exception.CopierException;
 import org.margo.plugins.copier.exception.DownloaderException;
 
 import java.io.IOException;
@@ -33,13 +34,13 @@ public class HTTPDownloader implements Downloader {
     }
 
     @Override
-    public byte[] download(URI uri) throws DownloaderException {
+    public void download(URI uri, DownloaderHandler downloaderHandler) throws DownloaderException {
         try (CloseableHttpClient httpClient = HttpClients.createDefault()){
             HttpGet httpGet = new HttpGet(uri);
             httpGet.setHeaders(headers.toArray(new Header[this.headers.size()]));
             CloseableHttpResponse httpResponse = httpClient.execute(httpGet);
-            return IOUtils.toByteArray(httpResponse.getEntity().getContent());
-        } catch (IOException e) {
+            downloaderHandler.handle(IOUtils.toByteArray(httpResponse.getEntity().getContent()), uri);
+        } catch (IOException | CopierException e) {
             throw new DownloaderException(e);
         }
     }
